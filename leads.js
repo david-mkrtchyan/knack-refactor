@@ -1,6 +1,7 @@
 const leads = (function () {
+    let leadesPage = 1;
 
-//Adding user credentials on Leads/Quicksets submit
+    //Adding user credentials on Leads/Quicksets submit
     function showCustomerInfoInConfirmationMessage(record, view) {
         setTimeout(() => {
             let name = document.createElement("p");
