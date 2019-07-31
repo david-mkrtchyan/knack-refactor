@@ -1,7 +1,85 @@
 const leads = (function () {
-    let leadesPage = 1;
 
-    //Adding user credentials on Leads/Quicksets submit
+    const lead = (function () {
+        var emailId = "#field_26" ;
+        var zipId = "#field_79";
+        var cityId = "#field_75";
+        var stateId = "#view_152-field_76";
+        var availableCitiesId = "#view_152-field_194";
+
+        $('#kn-input-field_507 label span').remove();
+        $('#field_507').hide();
+
+        $(emailId).on("blur", function(){
+            if( $(emailId).val().length > 4 && $(emailId).val().indexOf("@")!== -1) {
+                fixTld(emailId);
+            }
+        });
+
+        function init(utils, modal, map) {
+            utils.onZipCodeBlur( zipId, cityId, stateId, availableCitiesId, modal );
+            utils.initPhoneNumberConfigs(['field_25', 'field_77']);
+            utils.setPhoneNumberMask(['field_25', 'field_77']);
+            //disable HTML input default autosuggestions
+            utils.disableInputDefaultAutosuggest(['first', 'last']);
+            // this checks version on qs form
+            utils.checkVersion();
+            listenToInputFieldValueChange('#field_25', modal);
+        }
+
+        return {
+            init
+        }
+    });
+
+    const quickSet = (function () {
+        var phoneId = "#field_25" ;
+        var emailId = "#field_26" ;
+        var zipId = "#field_79";
+        var cityId = "#field_75";
+        var stateId = "#view_103-field_76";
+        var availableCitiesId = "#view_103-field_194";
+
+        $('#kn-input-field_507 label span').remove();
+        $('#field_507').hide();
+        listenToInputFieldValueChange('#field_25');
+
+        // updates email tld if not proper
+        $(emailId).on("blur", function() {
+            if( $(emailId).val().length > 4 && $(emailId).val().indexOf("@")!== -1) {
+                fixTld(emailId);
+            }
+        });
+
+        // formats email using phone number if email doesn't exist
+        $(".kn-button").on("click", function() {
+            formatEmail(emailId, phoneId);
+            $(phoneId).val( removeCharAndSpaces(	$(phoneId).val()	) ) ;
+            return true;
+        });
+
+        //Show Customer info on Quicksets create
+        $(document).on('knack-record-create.view_103', function(event, view, record) {
+            showCustomerInfoInConfirmationMessage(record, 'view_103')
+        });
+
+        function init(utils, modal, map) {
+            utils.onZipCodeBlur( zipId, cityId, stateId, availableCitiesId, modal );
+            utils.initPhoneNumberConfigs(['field_25', 'field_77']);
+            utils.setPhoneNumberMask(['field_25', 'field_77']);
+            //disable HTML default auto suggest for phone fields
+            utils.disableInputDefaultAutosuggest(['first', 'last']);
+
+            // this makes sure the most recent version is used for lead form
+            utils.checkVersion();
+        }
+
+        return {
+            init
+        }
+    })();
+
+    //Adding user credentials on Leads/Quicksets submit this method also in Utils
     function showCustomerInfoInConfirmationMessage(record, view) {
         setTimeout(() => {
             let name = document.createElement("p");
@@ -27,21 +105,21 @@ const leads = (function () {
     }
 
     //listenting to element input value changes
-    function listenToInputFieldValueChange(fieldName) {
+    function listenToInputFieldValueChange(fieldName, modal) {
         document.getElementById('field_25').onpaste = function() {
             setTimeout(() => {
-                initModalForLeadSearch.call(this);
+                initModalForLeadSearch.call(this, modal);
             }, 0)
         };
         $(fieldName).on('keyup', function (e) {
             if (e.which >= 48 && e.which <= 57 || e.which >= 96 && e.which <= 105) {
-                initModalForLeadSearch.call(this);
+                initModalForLeadSearch.call(this, modal);
             }
         });
     }
 
     //shows the Leads information in the modal
-    function initModalForLeadSearch() {
+    function initModalForLeadSearch(modal) {
         if (this.value && this.value.replace(/[^0-9]/g, "").length === 10) {
             let value = this.value.replace(/[- )(]/g, '');
             $.ajax({
@@ -96,47 +174,6 @@ const leads = (function () {
             `This prospect already exists in our system, if they would like to set a Quickset, please call it in now using the phone number they provided.`
     }
 
-    function onZipCodeBlur( zipFieldId, cityFieldId, stateFieldId, availableCitiesId, getRegion = false) {
-        var selectId = "#view_2-field_24";
-        onBlur( zipFieldId , function( zip ) {
-            //if (getRegion && !$('#field_507').val()) {
-            getRegionByZipCode(zip, (res) => {
-                if (res[0] === 'R' && res.length <= 3) {
-                    $('#field_507').val(res);
-                } else {
-                    $('#field_507').val('');
-                    //if there is no Cities with current ZIP-CODE then showing this message;
-                    if (zip) {
-                        let modalTtitle = 'Area Not Serviced';
-                        modal.infoModal([], modalTtitle, 'Sorry we do not service this Zip code')
-                    }
-                }
-            })
-
-            if(	zip.replace(/ /g,'').length === 5 & $(cityFieldId).val().length < 3	){
-                getZipCodeAddressInfo( zip , function( res ){
-                    var data = getCityAndState( res, cityFieldId );
-                    var cities = data[0] ;
-                    $(stateFieldId).val( data[1] );
-                    $(cityFieldId).val( cities[0] );
-                    setAvailableCitiesForZipField(cities, cityFieldId, availableCitiesId );
-                });
-            }
-        });
-    }
-
-    //getting regions by entered zip code
-    function getRegionByZipCode(ztpCode, success) {
-        $.ajax({
-            url: `https://ajt-sandbox.herokuapp.com/inContact/zips?zip=${ztpCode}`,
-            type: 'GET',
-            dataType: 'text',
-            success: success,
-            error: (error) => console.log(error, 'error on getting regions by ZIP code'),
-            beforeSend: (xhr) =>  xhr.setRequestHeader("Content-Type","application/json")
-        });
-    }
-
     function fixTld(emailId) {
         var email = $(emailId).val();
 
@@ -158,112 +195,8 @@ const leads = (function () {
         }
     }
 
-    //value":"06/07/2019"
-    function getLeadsListing() {
-        let filters = {
-            rules: [
-                //{
-                //  "field":"field_344",
-                //  "operator":"is",
-                //   "value":"06/01/2019"
-                //  },
-                {
-                    "match":"and",
-                    "field":"field_565",
-                    "operator":"is blank",
-                    "field_name":"Knack Id"
-                },
-                {
-                    "field":"field_344",
-                    "operator":"is after",
-                    "value":"05/30/2019"
-                },
-                {
-                    "field":"field_344",
-                    "operator":"is before",
-                    "value":"07/01/2019"
-                }
-            ]
-        }
-
-        let api_url = `https://api.knack.com/v1/objects/object_1/records?page=${leadesPage++}&rows_per_page=${rowsPerPage}&filters=` + encodeURIComponent(JSON.stringify(filters));
-
-        $.ajax({
-            url: api_url,
-            dataType: 'json',
-            type: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': Knack.getUserToken(),
-                "X-Knack-Application-Id": Knack.application_id,
-                "X-Knack-REST-API-KEY": "71e543b0-a1af-11e9-b051-1fb54b980f24"
-            },
-            success: function (res) {
-                let items = res.records;
-                let index = 0;
-
-                var doAsyncThing = function (recordId) {
-                    return updateKnackid(recordId)
-                };
-
-                var recursivelyDoAsyncThing = function (recordId) {
-                    console.log('current index', index)
-                    return doAsyncThing(recordId).then(function (response) {
-                        return new Promise(function (resolve, reject) {
-                            index++;
-                            //do something with response
-                            if (index < items.length) {
-                                //get newlastId
-                                return resolve(recursivelyDoAsyncThing(items[index].id));
-                            } else {
-                                resolve();
-                            }
-                        });
-                    });
-                };
-
-                recursivelyDoAsyncThing(items[index].id).then(function () {
-                    console.log('Done! all records updated successfully');
-                    if (leadesPage <= res.total_pages) {
-                        getLeadsListing();
-                    }
-                });
-
-            },
-            error: function (request, error) {
-                console.log(error)
-            }
-        });
-    }
-
-    function updateKnackid(knackId) {
-        return new Promise(function (resolve, reject) {
-            $.ajax({
-                url: `https://api.knack.com/v1/objects/object_1/records/${knackId}`,
-                dataType: 'json',
-                type: "PUT",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': Knack.getUserToken(),
-                    "X-Knack-Application-Id": Knack.application_id,
-                    "X-Knack-REST-API-KEY": "71e543b0-a1af-11e9-b051-1fb54b980f24"
-                },
-                data: JSON.stringify({"field_565": knackId}),
-                success: function (res) {
-                    resolve(res)
-                },
-                error: function (request, error) {
-                    resolve(updateKnackid(knackId))
-                    //reject(error)
-                }
-            });
-        });
-    }
-
     return {
-        fixTld,
-        onZipCodeBlur,
-        getLeadsListing,
-        listenToInputFieldValueChange
+        lead,
+        quickSet,
     }
 })();

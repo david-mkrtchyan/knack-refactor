@@ -1,5 +1,5 @@
 const utils = (function () {
-    const viewRenderPrefix: 'knack-view-render.'
+    const viewRenderPrefix = 'knack-view-render.';
 
 // specifying View runs for each form reload. (don't use scene-render)
     function specifyView(view, func) {
@@ -70,22 +70,22 @@ const utils = (function () {
 
         const isModifierKey = (event) => {
             const key = event.keyCode;
-            return (event.shiftKey === true || key === 35 || key === 36) || // Allow Shift, Home, End
-                (key === 8 || key === 9 || key === 13 || key === 46) || // Allow Backspace, Tab, Enter, Delete
-                (key > 36 && key < 41) || // Allow left, up, right, down
-                (
-                    // Allow Ctrl/Command + A,C,V,X,Z
-                    (event.ctrlKey === true || event.metaKey === true) &&
-                    (key === 65 || key === 67 || key === 86 || key === 88 || key === 90)
-                )
-        };
+        return (event.shiftKey === true || key === 35 || key === 36) || // Allow Shift, Home, End
+            (key === 8 || key === 9 || key === 13 || key === 46) || // Allow Backspace, Tab, Enter, Delete
+            (key > 36 && key < 41) || // Allow left, up, right, down
+            (
+                // Allow Ctrl/Command + A,C,V,X,Z
+                (event.ctrlKey === true || event.metaKey === true) &&
+                (key === 65 || key === 67 || key === 86 || key === 88 || key === 90)
+            )
+    };
 
-        const enforceFormat = (event) => {
-            // Input must be of a valid number format or a modifier key, and not longer than ten digits
-            if (!isNumericInput(event) && !isModifierKey(event)) {
-                event.preventDefault();
-            }
-        };
+    const enforceFormat = (event) => {
+        // Input must be of a valid number format or a modifier key, and not longer than ten digits
+        if (!isNumericInput(event) && !isModifierKey(event)) {
+            event.preventDefault();
+        }
+    };
 
         const formatToPhone = (event) => {
             if (isModifierKey(event)) {
@@ -135,7 +135,7 @@ const utils = (function () {
     }
 
 //disable HTML defulat autosuggest for phone fields
-    function disableInputDefaultAutosuggest(fields = []) {
+    function disableInputDefaultAutoSuggest(fields = []) {
         fields.forEach(field => {
             let el = document.getElementById(field);
             el.setAttribute('autocomplete', 'off');
@@ -166,6 +166,209 @@ const utils = (function () {
         sendCreateContactRequest(JSON.stringify(record));
     }
 
+    //Adding user credentials on Leads/Quicksets submit
+    function showCustomerInfoInConfirmationMessage(record, view) {
+        setTimeout(() => {
+            let name = document.createElement("p");
+            name.innerHTML = 'Name: ' + record.field_1_raw.first + ' ' + record.field_1_raw.last;
+
+            let phoneNumber = document.createElement("p");
+            phoneNumber.innerHTML = 'Phone Number: ' + record.field_25_raw.formatted;
+
+            let email = document.createElement('p');
+            email.innerHTML = 'Email: ' + record.field_26_raw.email;
+
+            let address = document.createElement('p');
+            address.innerHTML = 'Adress: ' + record.field_73_raw;
+
+            let city = document.createElement('p');
+            city.innerHTML = 'City: ' + record.field_75_raw;
+
+            let state = document.createElement('p');
+            state.innerHTML = 'State: ' + record.field_76_raw;
+
+            $('#' + view +' .kn-form-confirmation .success').append(name, phoneNumber, email, address, city, state);
+        })
+    }
+
+    function sendCreateContactRequest(data){
+        $.ajax({
+            type: 'POST',
+            url: 'https://ajt-sandbox.herokuapp.com/knack',
+            headers: {"content-type": "application/json"},
+            data: data,
+            success: function(){
+                console.log('hello')
+            },
+            failure: function(error){
+                console.log(error);
+            }
+        });
+    }
+
+    // adds functionality to search city and state data based off zip code
+    function onZipCodeBlur( zipFieldId, cityFieldId, stateFieldId, availableCitiesId, modal) {
+        var selectId = "#view_2-field_24";
+        onBlur( zipFieldId , function( zip ) {
+            //if (getRegion && !$('#field_507').val()) {
+            getRegionByZipCode(zip, (res) => {
+                if (res[0] === 'R' && res.length <= 3) {
+                    $('#field_507').val(res);
+                } else {
+                    $('#field_507').val('');
+                    //if there is no Cities with current ZIP-CODE then showing this message;
+                    if (zip) {
+                        let modalTtitle = 'Area Not Serviced';
+                        modal.infoModal([], modalTtitle, 'Sorry we do not service this Zip code')
+                    }
+                }
+            });
+
+            if(	zip.replace(/ /g,'').length === 5 & $(cityFieldId).val().length < 3	){
+                getZipCodeAddressInfo( zip , function( res ){
+                    var data = getCityAndState( res, cityFieldId );
+                    var cities = data[0] ;
+                    $(stateFieldId).val( data[1] );
+                    $(cityFieldId).val( cities[0] );
+                    setAvailableCitiesForZipField(cities, cityFieldId, availableCitiesId );
+                });
+            }
+        });
+    }
+
+    function setAvailableCitiesForZipField(cities, cityFieldId, availableCitiesId){
+        $(availableCitiesId).children('option').remove();
+        $.each(cities, function(index, locality){
+            var $option = $(document.createElement('option'));
+            $option.html(locality);
+            $option.attr('value',locality);
+            if(index == 0) {
+                $option.attr('selected','selected');
+            }
+            $(availableCitiesId).append($option);
+
+        });
+
+    }
+
+    function isTableEmpty(tableViewId){
+        console.log(tableViewId + " tbody tr");
+        console.log($(tableViewId + " tbody tr"));
+        return $(tableViewId + " tbody tr").hasClass('kn-tr-nodata');
+    }
+
+    function showAlertOnClickIfTableIsEmpty(buttonClass, tableViewId, message){
+        $(buttonClass).on('click',function(){
+            if( isTableEmpty(tableViewId) ){
+                alert(message);
+                return false ;
+            }
+        });
+    }
+
+    function showAlertOnClickIfTableIsNotEmpty(buttonClass, tableViewId, message){
+        $(buttonClass).on('click',function(){
+            if( ! isTableEmpty(tableViewId) ){
+                alert(message);
+                return false ;
+            }
+        });
+    }
+
+    //adding dash formatted text to source code filed
+    function addDashForSource(input) {
+        let str = input.value;
+        if (str && str.length >= 2) {
+            str = str.split('-').join('');
+            input.value = str.substring(0, 2) + "-" + str.substring(2, str.length);
+        }
+    }
+
+    // updates the user to the most recent version of the app by reloading the page and updating their user record.
+    function updateUserVersion(userId, updatedVersion){
+        var d = {
+            "field_362": updatedVersion
+        };
+        $.ajax({
+            url:"https://api.knack.com/v1/objects/object_4/records/" + userId,
+            type:"PUT",
+            headers: {
+                "X-Knack-Application-Id": "5ae163cf99f0812865bce773",
+                "X-Knack-REST-API-KEY":"71e543b0-a1af-11e9-b051-1fb54b980f24",
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(d),
+            success: function(data){
+                location.reload(true);
+            },
+            error: function(request,error){
+                console.log(error);
+            }
+        });
+    }
+
+// checks the users version of the app then updates it if its not the most recent
+    function checkVersion() {
+        $.ajax({
+            url:"https://api.knack.com/v1/objects/object_31/records",
+            type:"GET",
+            headers: {
+                "X-Knack-Application-Id": "5ae163cf99f0812865bce773",
+                "X-Knack-REST-API-KEY":"71e543b0-a1af-11e9-b051-1fb54b980f24",
+                'Content-Type': 'application/json'
+            },
+            success: function(data){
+                if(Knack.getUserAttributes().values.field_362 != data.total_records){
+                    updateUserVersion( Knack.getUserAttributes().id, data.total_records ) ;
+                } else {
+                    console.log('is flase');
+                }
+            },
+            error: function(request,error){
+                console.error(error);
+            }
+        });
+    }
+
+    // returns the zip, city and state from the address info returned by google
+    function getAddressInfo(response, cityFieldId) {
+        var cities = '' ;
+        var state= '' ;
+        var zip = '' ;
+        var address_components = response.results[0].address_components;
+        if (response.results[0].postcode_localities && response.results[0].postcode_localities.length > 1) {
+            let modalTtitle = 'Please pick the correct city';
+            modal.formModal(response.results[0].postcode_localities, 'radio', modalTtitle, cityFieldId)
+        }
+        $.each(address_components, function(index, component){
+            var types = component.types;
+            // loops through address results array
+            $.each(types, function(index, type){
+                // sets the value of the city
+                if(response.results[0].hasOwnProperty('postcode_localities')){
+                    cities = response.results[0].postcode_localities ;
+                }else if (type == 'locality' || type == 'neighborhood') {
+                    cities = [component.long_name];
+                }
+                // sets value of the state
+                if(type == 'administrative_area_level_1') {
+                    state = component.short_name;
+                }
+                if( type == 'postal_code'){
+                    zip = component.short_name ;
+                }
+            });
+        });
+        return [zip, cities, state];
+    }
+
+    function getCityAndState(res, cityFieldId) {
+        var data = getAddressInfo(res, cityFieldId);
+        var cities = data[1];
+        var state = data[2];
+        return [ cities , state ] ;
+    }
+
     return {
         round,
         getNum,
@@ -173,6 +376,11 @@ const utils = (function () {
         formatDate,
         formatEmail,
         specifyView,
+        onZipCodeBlur,
+        checkVersion,
+        isTableEmpty,
+        showAlertOnClickIfTableIsEmpty,
+        showAlertOnClickIfTableIsNotEmpty,
         createContact,
         hideTableIfEmpty,
         setPhoneNumberMask,
@@ -181,6 +389,6 @@ const utils = (function () {
         setPhoneNumberFormat,
         capitalizeFirstLetter,
         initPhoneNumberConfigs,
-        disableInputDefaultAutosuggest
+        disableInputDefaultAutoSuggest
     }
-})()
+})();

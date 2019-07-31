@@ -32,7 +32,6 @@ const payroll = (function () {
                 "X-Knack-REST-API-KEY": "71e543b0-a1af-11e9-b051-1fb54b980f24"
             },
             success: function (res) {
-                console.log(res)
                 getPayrollInfoFromZoho(res.records[0].field_102, userName)
             },
             error: function (request, error) {
@@ -96,7 +95,7 @@ const payroll = (function () {
 
                 td.appendChild(span);
                 tr.appendChild(td);
-            })
+            });
             tbody.appendChild(tr);
         })
     }
@@ -126,7 +125,7 @@ const payroll = (function () {
                 payrollDateRangeFilter[input.getAttribute('name')] = input.value ? formatDate(input.value) : '';
                 getPayrolls();
             }
-        })
+        });
 
         //view.prepend(filterContainer);
         view.insertBefore(filterContainer, view.children[1]);

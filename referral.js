@@ -32,7 +32,11 @@ const referral = (function () {
         });
     }
 
+    function init(utils, modals, map) {
+        hideSalesPersonFieldIfExist();
+    }
+
     return {
-        hideSalesPersonFieldIfExist
+        init
     }
 })();
