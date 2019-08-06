@@ -207,7 +207,7 @@ const utils = (function () {
     }
 
     // adds functionality to search city and state data based off zip code
-    function onZipCodeBlur( zipFieldId, cityFieldId, stateFieldId, availableCitiesId, modal) {
+    function onZipCodeBlur( zipFieldId, cityFieldId, stateFieldId, availableCitiesId, modal, map) {
         var selectId = "#view_2-field_24";
         onBlur( zipFieldId , function( zip ) {
             //if (getRegion && !$('#field_507').val()) {
@@ -225,7 +225,7 @@ const utils = (function () {
             });
 
             if(	zip.replace(/ /g,'').length === 5 & $(cityFieldId).val().length < 3	){
-                getZipCodeAddressInfo( zip , function( res ){
+                map.getZipCodeAddressInfo( zip , function( res ){
                     var data = getCityAndState( res, cityFieldId );
                     var cities = data[0] ;
                     $(stateFieldId).val( data[1] );
@@ -292,11 +292,7 @@ const utils = (function () {
         $.ajax({
             url:"https://api.knack.com/v1/objects/object_4/records/" + userId,
             type:"PUT",
-            headers: {
-                "X-Knack-Application-Id": "5ae163cf99f0812865bce773",
-                "X-Knack-REST-API-KEY":"71e543b0-a1af-11e9-b051-1fb54b980f24",
-                'Content-Type': 'application/json'
-            },
+            headers: window.knackApiHeaders,
             data: JSON.stringify(d),
             success: function(data){
                 location.reload(true);
@@ -312,11 +308,7 @@ const utils = (function () {
         $.ajax({
             url:"https://api.knack.com/v1/objects/object_31/records",
             type:"GET",
-            headers: {
-                "X-Knack-Application-Id": "5ae163cf99f0812865bce773",
-                "X-Knack-REST-API-KEY":"71e543b0-a1af-11e9-b051-1fb54b980f24",
-                'Content-Type': 'application/json'
-            },
+            headers: knackApiHeaders,
             success: function(data){
                 if(Knack.getUserAttributes().values.field_362 != data.total_records){
                     updateUserVersion( Knack.getUserAttributes().id, data.total_records ) ;
@@ -376,19 +368,21 @@ const utils = (function () {
         formatDate,
         formatEmail,
         specifyView,
-        onZipCodeBlur,
         checkVersion,
         isTableEmpty,
-        showAlertOnClickIfTableIsEmpty,
-        showAlertOnClickIfTableIsNotEmpty,
+        onZipCodeBlur,
         createContact,
+        getAddressInfo,
         hideTableIfEmpty,
+        addDashForSource,
         setPhoneNumberMask,
         getRegionByZipCode,
         removeCharAndSpaces,
         setPhoneNumberFormat,
         capitalizeFirstLetter,
         initPhoneNumberConfigs,
-        disableInputDefaultAutoSuggest
+        disableInputDefaultAutoSuggest,
+        showAlertOnClickIfTableIsEmpty,
+        showAlertOnClickIfTableIsNotEmpty
     }
 })();

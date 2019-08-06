@@ -1,11 +1,21 @@
+window.$ = $;
+window.Knack = Knack;
+window.knackApiHeaders = {
+    'Content-Type': 'application/json',
+    'Authorization': Knack.getUserToken(),
+    "X-Knack-Application-Id": Knack.application_id,
+    "X-Knack-REST-API-KEY": "773a93c0-49c6-11e8-a793-d30f18c1f89d"
+};
+
 const scripts = [
-    'http://knack.test/modals.js',
-    'http://knack.test/utils.js',
-    'http://knack.test/map.js',
-    'http://knack.test/referal.js',
-    'http://knack.test/leads.js',
-    'http://knack.test/add-lead.js',
-    'http://knack.test/expense.js',
+    'https://knack.test/modals.js',
+    'https://knack.test/utils.js',
+    'https://knack.test/map.js',
+    'http://knack.test/cookies.js',
+    'https://knack.test/referral.js',
+    'https://knack.test/leads.js',
+    'https://knack.test/add-lead.js',
+    'https://knack.test/expense.js',
 ];
 
 // The first parameter is an array of files to load.
@@ -19,7 +29,7 @@ LazyLoad.js(scripts, function () {
         referral.init(utils, modal, map);
 
         $(document).on('knack-form-submit.view_414', function(event, view, record) {
-            createContact(record);
+            utils.createContact(record);
         });
     });
 
@@ -28,10 +38,10 @@ LazyLoad.js(scripts, function () {
     * addLead
     * */
     utils.specifyView('view_186', function () {
-        addLead.init(utils, modal, map);
+        addLead.init(utils, modal, map, cookies);
 
         //data entry + preset form api requests
-        $(document).on('knack-form-submit.addLead', function(event, view, record) {  createContact(record) });
+        $(document).on('knack-form-submit.addLead', function(event, view, record) {  utils.createContact(record) });
     });
 
     /*
@@ -42,7 +52,7 @@ LazyLoad.js(scripts, function () {
         leads.lead.init(utils, modal, map);
 
         //lead form api request
-        $(document).on('knack-form-submit.view_152', function(event, view, record) {  createContact(record, 'view_152') });
+        $(document).on('knack-form-submit.view_152', function(event, view, record) {  utils.createContact(record, 'view_152') });
     });
 
     /*
@@ -50,7 +60,7 @@ LazyLoad.js(scripts, function () {
     * view_103
     * */
     utils.specifyView('view_103', function () {
-        leads.quickSet.init(utils, modal, map)
+        leads.quickSet.init(utils, modal, map);
     });
 
     /*
@@ -59,7 +69,7 @@ LazyLoad.js(scripts, function () {
     * manager edit expense for employee view
     * */
     utils.specifyView('view_399',function(){
-        expense.setupAddExpenseForm( false );
+        expense.init(utils, modal, map,  false );
     });
 
     /*
@@ -68,7 +78,7 @@ LazyLoad.js(scripts, function () {
     * Manager add expense for employee view
     * */
     utils.specifyView('view_528',function(){
-        expense.setupAddExpenseForm( false );
+        expense.init(utils, modal, map,  false );
     });
 
     /*
@@ -77,7 +87,7 @@ LazyLoad.js(scripts, function () {
     * data entry add expense form
     * */
     utils.specifyView('view_300',function(){
-        expense.setupAddExpenseForm( false );
+        expense.init(utils, modal, map,  false );
     });
 
     /*
@@ -131,7 +141,7 @@ LazyLoad.js(scripts, function () {
     * Employee add expense form - view 319 is for the add expense form
     * */
     utils.specifyView('view_389', function(){
-        utils.setupAddExpenseForm( true );
+        utils.init(utils, modal, map,  true );
     });
 
     /*
@@ -149,7 +159,7 @@ LazyLoad.js(scripts, function () {
     * Employee edit expense view for first edit expense page
     * */
     utils.specifyView('view_392', function(){
-        expense.setupAddExpenseForm(true);
+        expense.init(utils, modal, map, true);
     });
 
     /*
@@ -158,7 +168,7 @@ LazyLoad.js(scripts, function () {
     * Employee edit expense view for second edit expense page
     * */
     utils.specifyView('view_395', function(){
-        expense.setupAddExpenseForm(true);
+        expense.init(utils, modal, map, true);
     });
 
     /*
@@ -167,7 +177,7 @@ LazyLoad.js(scripts, function () {
     * Employee edit expense view for the re submit page
     * */
     utils.specifyView('view_449', function(){
-        expense.setupAddExpenseForm(true);
+        expense.init(utils, modal, map, true);
     });
 
     /*
@@ -176,7 +186,7 @@ LazyLoad.js(scripts, function () {
     * Employee edit expense view for second edit expense page
     * */
     utils.specifyView('view_399', function(){
-        expense.setupAddExpenseForm(true);
+        expense.init(utils, modal, map, true);
     });
 
     /*
@@ -199,7 +209,7 @@ LazyLoad.js(scripts, function () {
 
         // salesperson api request
         $(document).on('knack-form-submit.view_421', function(event, view, record) {
-            createContact(record);
+            utils.createContact(record);
         });
     });
 

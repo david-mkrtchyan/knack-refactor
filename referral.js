@@ -14,12 +14,7 @@ const referral = (function () {
             url: api_url,
             dataType: 'json',
             type: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': Knack.getUserToken(),
-                "X-Knack-Application-Id": Knack.application_id,
-                "X-Knack-REST-API-KEY": "71e543b0-a1af-11e9-b051-1fb54b980f24"
-            },
+            headers: window.knackApiHeaders,
             success: function (res) {
                 if (res.records[0].field_307_raw.length) {
                     $('#kn-input-field_343').hide();
@@ -33,6 +28,7 @@ const referral = (function () {
     }
 
     function init(utils, modals, map) {
+        console.log('map', map)
         hideSalesPersonFieldIfExist();
     }
 

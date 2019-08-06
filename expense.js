@@ -2,7 +2,7 @@ const expense = (function () {
     // hides the employee field and uses it to check if the employee whose report it is has a higher mileage rate;
     function getMileageRateUsingForm() {
         $("#kn-input-field_219").hide();
-        var isPersonWithHigherRate =  $("#kn-input-field_219").text().toLowerCase().includes('salgado') ;
+        let isPersonWithHigherRate =  $("#kn-input-field_219").text().toLowerCase().includes('salgado') ;
         return isPersonWithHigherRate ? .45 : .35 ;
     }
 
@@ -11,11 +11,11 @@ const expense = (function () {
     }
 
 // calculates total cost of mileage and tolls ;
-    function calculateTravelExpense( user ) {
+    function calculateTravelExpense(user) {
         var beginningMileageId = "#field_225" ;
         var endingMileageId = "#field_226";
         var amountId= "#field_222";
-        var tollsId = "#field_252"
+        var tollsId = "#field_252";
         var expSourceCodeId = "#field_250";
         var dailyMileageDeduct = "#field_267";
         var maxExpense = 1000;
@@ -34,7 +34,6 @@ const expense = (function () {
         } else {
             $(amountId).prop('disabled', false);
         }
-
     }
 
     // for all add expense form views use this code, there is a temp band aid in there.
@@ -49,7 +48,7 @@ const expense = (function () {
         var receiptId= "#field_227_upload";
 
         // hide employee field if mileagerate is false meaning its not user
-        if(! isCalculatedByLoggedInUser){
+        if(!isCalculatedByLoggedInUser){
             calculateTravelExpense(isCalculatedByLoggedInUser)
         }
 
@@ -81,9 +80,7 @@ const expense = (function () {
 
         // shows alert on submit if receipt is needed
         $(".kn-form .kn-button").on('click',function() {
-
             var hasReceipt = $('#kn-input-field_227 .kn-asset-current').text().trim(" ").length != 0 ;
-
             var isTravelExpense = $(categoryIdChzn + " a span").text().toLowerCase() == "travel" ;
             var tolls = getNum(tollsId);
 
@@ -91,21 +88,24 @@ const expense = (function () {
                 calculateTravelExpense(isCalculatedByLoggedInUser)
             }
 
-            if (tolls > 0 &  isTravelExpense & ! hasReceipt ){
+            if (tolls > 0 &  isTravelExpense && !hasReceipt ){
                 alert('Please add a receipt for your toll');
                 return false ;
             }
 
-            if ( ! isTravelExpense & ! hasReceipt ){
+            if ( ! isTravelExpense && !hasReceipt ){
                 alert("Please make sure you have selected the expense category and added a receipt if its a non mileage expenses");
                 return false ;
             }
-
         });
     }
 
+    function init(utils, modal, map, isCalculatedByLoggedInUser) {
+        setupAddExpenseForm(isCalculatedByLoggedInUser)
+
+    }
+
     return {
-        calculateTravelExpense,
-        setupAddExpenseForm
+        init
     }
 })();

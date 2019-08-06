@@ -1,4 +1,4 @@
-const modal =  (function () {
+var modal =  (function () {
     let jsUcfirst = function(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
@@ -103,6 +103,9 @@ const modal =  (function () {
     };
 
     return {
-       modal
+        jsUcfirst,
+        initModal,
+        formModal,
+        infoModal
     }
 })();

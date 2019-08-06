@@ -25,12 +25,7 @@ const payroll = (function () {
             url: api_url,
             dataType: 'json',
             type: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': Knack.getUserToken(),
-                "X-Knack-Application-Id": Knack.application_id,
-                "X-Knack-REST-API-KEY": "71e543b0-a1af-11e9-b051-1fb54b980f24"
-            },
+            headers: knackApiHeaders,
             success: function (res) {
                 getPayrollInfoFromZoho(res.records[0].field_102, userName)
             },
