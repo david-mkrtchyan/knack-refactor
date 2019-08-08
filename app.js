@@ -31,7 +31,7 @@ LazyLoad.js(scripts, function () {
         referral.init(utils, modal, map, mask);
 
         $(document).on('knack-form-submit.view_414', function(event, view, record) {
-            utils.createContact(record);
+            referral.createContact(record);
         });
     });
 
@@ -43,7 +43,7 @@ LazyLoad.js(scripts, function () {
         addLead.init(utils, modal, map, cookies, mask, leadsHelper);
 
         //data entry + preset form api requests
-        $(document).on('knack-form-submit.addLead', function(event, view, record) {  utils.createContact(record) });
+        $(document).on('knack-form-submit.addLead', function(event, view, record) {  referral.createContact(record) });
     });
 
     /*
@@ -54,7 +54,7 @@ LazyLoad.js(scripts, function () {
         leads.lead.init(utils, modal, map, mask, leadsHelper);
 
         //lead form api request
-        $(document).on('knack-form-submit.view_152', function(event, view, record) {  utils.createContact(record, 'view_152') });
+        $(document).on('knack-form-submit.view_152', function(event, view, record) {  referral.createContact(record, 'view_152') });
     });
 
     /*
@@ -211,7 +211,7 @@ LazyLoad.js(scripts, function () {
 
         // salesperson api request
         $(document).on('knack-form-submit.view_421', function(event, view, record) {
-            utils.createContact(record);
+            referral.createContact(record);
         });
     });
 
