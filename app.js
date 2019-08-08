@@ -4,17 +4,17 @@ window.knackApiHeaders = {
     'Content-Type': 'application/json',
     'Authorization': Knack.getUserToken(),
     "X-Knack-Application-Id": Knack.application_id,
-    "X-Knack-REST-API-KEY": "773a93c0-49c6-11e8-a793-d30f18c1f89d"
+    "X-Knack-REST-API-KEY": "d8428e10-a7f4-11e9-808f-0727a4c9d6da"
 };
 
 const scripts = [
     'https://knack.test/modals.js',
     'https://knack.test/utils.js',
     'https://knack.test/map.js',
-    'https://knack.test/cookies.js',
-    'https://knack.test/mask.js',
+    'http://knack.test/cookies.js',
+    'http://knack.test/mask.js',
     'https://knack.test/referral.js',
-    'https://knack.test/leads-helper.js',
+    'http://knack.test/leads-helper.js',
     'https://knack.test/leads.js',
     'https://knack.test/add-lead.js',
     'https://knack.test/expense.js',

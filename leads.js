@@ -23,7 +23,7 @@ const leads = (function () {
             map = _map;
             inputMask = _mask;
 
-            leadsHelper.onZipCodeBlur(zipId, cityId, stateId, availableCitiesId, modal, map);
+            leadsHelper.onZipCodeBlur(zipId, cityId, stateId, availableCitiesId, modal, map, utils);
             inputMask.initPhoneNumberConfigs(['field_25', 'field_77']);
             inputMask.setPhoneNumberMask(['field_25', 'field_77']);
             //disable HTML input default autosuggestions
@@ -76,7 +76,7 @@ const leads = (function () {
             map = _map;
             inputMask  = _mask;
 
-            leadsHelper.onZipCodeBlur(zipId, cityId, stateId, availableCitiesId, modal, map);
+            leadsHelper.onZipCodeBlur(zipId, cityId, stateId, availableCitiesId, modal, map, utils);
             inputMask.initPhoneNumberConfigs(['field_25', 'field_77']);
             inputMask.setPhoneNumberMask(['field_25', 'field_77']);
             //disable HTML default auto suggest for phone fields

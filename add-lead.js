@@ -154,7 +154,7 @@ const addLead = (function () {
         onZipCodeMultiSelectChange(cityId, availableCitiesId);
         onSetPresetBtnClick(sourceCodeId, sourceDateId, promoCodeId, marketerNameId);
         onStateBlur(zipId, addressId, cityId, stateId, leadsHelper);
-        leadsHelper.onZipCodeBlur(zipId, cityId, stateId, availableCitiesId);
+        leadsHelper.onZipCodeBlur(zipId, cityId, stateId, availableCitiesId, modal, map, utils);
         onSourceCodeBlur(sourceCodeId);
         onSubmitBtnClick(firstNameId, lastNameId, emailId, phoneId, stateId, sourceCodeId)
     }
