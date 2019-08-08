@@ -18,7 +18,7 @@ var map = (function () {
                 var lat = res.results[0].geometry.location.lat ;
                 var lng = res.results[0].geometry.location.lng;
                 getLatAndLngAddressInfo(lat , lng , success);
-            }else{
+            } else {
                 success(res);
             }
         });
@@ -33,12 +33,12 @@ var map = (function () {
 
             // loops through address results array
             $.each(types, function(index, type){
-                if( type == 'postal_code'){
+                if( type === 'postal_code') {
                     zip = component.short_name ;
                 }
             });
         });
-        return zip == '' ? false : true ;
+        return !!zip;
     }
 
     // sends api request for address info based on a zip code

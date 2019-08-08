@@ -1,9 +1,6 @@
 const addLead = (function () {
     //global variables
-    let map = {};
-    let utils = {};
-    let modal = {};
-    let cookies = {};
+    let map, utils, modal, cookies, mask = {};
 
     let firstNameId = "#first";
     let lastNameId = "#last";
@@ -80,7 +77,7 @@ const addLead = (function () {
     }
 
 // searches for zip code based on the city and state.
-    function onStateBlur(zipFieldId, addressFieldId, cityFieldId, stateFieldId) {
+    function onStateBlur(zipFieldId, addressFieldId, cityFieldId, stateFieldId, leadsHelper) {
         var address = '';
         var city = '';
         var state = '';
@@ -91,7 +88,7 @@ const addLead = (function () {
             state = $(stateFieldId).val();
             if (city.length > 2 && state.length > 1) {
                 map.getCityStateAddressInfo(address, city, state, function (res) {
-                    var zip = utils.getAddressInfo(res, cityFieldId)[0];
+                    var zip = leadsHelper.getAddressInfo(res, cityFieldId, modal)[0];
                     $(zipFieldId).val(zip);
                 });
             }
@@ -131,12 +128,12 @@ const addLead = (function () {
     // formats the form
     function formatForm(firstNameId, lastNameId, emailId, phoneId, stateId, sourceCodeId) {
         // adds phone to email if email doesn't exist
-        utils.formatEmail(emailId, phoneId);
-        $(phoneId).val(removeCharAndSpaces($(phoneId).val()));
+        mask.formatEmail(emailId, phoneId);
+        $(phoneId).val(utils.removeCharAndSpaces($(phoneId).val()));
 
         // capitilize name first letters
-        $(firstNameId).val(capitalizeFirstLetter($(firstNameId).val()));
-        $(lastNameId).val(capitalizeFirstLetter($(lastNameId).val()));
+        $(firstNameId).val(utils.capitalizeFirstLetter($(firstNameId).val()));
+        $(lastNameId).val(utils.capitalizeFirstLetter($(lastNameId).val()));
 
         //sets state and source code to uppercase
         $(stateId).val($(stateId).val().toUpperCase());
@@ -144,19 +141,20 @@ const addLead = (function () {
         formatSourceCode(sourceCodeId);
     }
 
-    function init(u, m, maps, c) {
-        utils = u;
-        modal = m;
-        map = maps;
-        cookies = c;
+    function init(_utils, _modal, _map, _cookies, _mask, leadsHelper) {
+        utils = _utils;
+        modal = _modal;
+        map = _map;
+        cookies = _cookies;
+        mask = _mask;
         setPresetFields(sourceCodeId, sourceDateId, promoCodeId, marketerNameId);
         autocompleteDate(sourceDateId);
         autocompleteDate(contactDateId);
         // event listeners
         onZipCodeMultiSelectChange(cityId, availableCitiesId);
         onSetPresetBtnClick(sourceCodeId, sourceDateId, promoCodeId, marketerNameId);
-        onStateBlur(zipId, addressId, cityId, stateId);
-        utils.onZipCodeBlur(zipId, cityId, stateId, availableCitiesId);
+        onStateBlur(zipId, addressId, cityId, stateId, leadsHelper);
+        leadsHelper.onZipCodeBlur(zipId, cityId, stateId, availableCitiesId);
         onSourceCodeBlur(sourceCodeId);
         onSubmitBtnClick(firstNameId, lastNameId, emailId, phoneId, stateId, sourceCodeId)
     }

@@ -12,7 +12,9 @@ const scripts = [
     'https://knack.test/utils.js',
     'https://knack.test/map.js',
     'http://knack.test/cookies.js',
+    'http://knack.test/mask.js',
     'https://knack.test/referral.js',
+    'http://knack.test/leads-helper.js',
     'https://knack.test/leads.js',
     'https://knack.test/add-lead.js',
     'https://knack.test/expense.js',
@@ -26,7 +28,7 @@ LazyLoad.js(scripts, function () {
     * view-414
     * */
     utils.specifyView('view_414', function () {
-        referral.init(utils, modal, map);
+        referral.init(utils, modal, map, mask);
 
         $(document).on('knack-form-submit.view_414', function(event, view, record) {
             utils.createContact(record);
@@ -38,7 +40,7 @@ LazyLoad.js(scripts, function () {
     * addLead
     * */
     utils.specifyView('view_186', function () {
-        addLead.init(utils, modal, map, cookies);
+        addLead.init(utils, modal, map, cookies, mask, leadsHelper);
 
         //data entry + preset form api requests
         $(document).on('knack-form-submit.addLead', function(event, view, record) {  utils.createContact(record) });
@@ -49,7 +51,7 @@ LazyLoad.js(scripts, function () {
     * view_152
     * */
     utils.specifyView('view_152', function () {
-        leads.lead.init(utils, modal, map);
+        leads.lead.init(utils, modal, map, mask, leadsHelper);
 
         //lead form api request
         $(document).on('knack-form-submit.view_152', function(event, view, record) {  utils.createContact(record, 'view_152') });
@@ -60,7 +62,7 @@ LazyLoad.js(scripts, function () {
     * view_103
     * */
     utils.specifyView('view_103', function () {
-        leads.quickSet.init(utils, modal, map);
+        leads.quickSet.init(utils, modal, map, mask, leadsHelper)
     });
 
     /*
@@ -69,7 +71,7 @@ LazyLoad.js(scripts, function () {
     * manager edit expense for employee view
     * */
     utils.specifyView('view_399',function(){
-        expense.init(utils, modal, map,  false );
+        expense.init(utils, modal, map, mask,  false );
     });
 
     /*
@@ -78,7 +80,7 @@ LazyLoad.js(scripts, function () {
     * Manager add expense for employee view
     * */
     utils.specifyView('view_528',function(){
-        expense.init(utils, modal, map,  false );
+        expense.init(utils, modal, map, mask,  false );
     });
 
     /*
@@ -87,7 +89,7 @@ LazyLoad.js(scripts, function () {
     * data entry add expense form
     * */
     utils.specifyView('view_300',function(){
-        expense.init(utils, modal, map,  false );
+        expense.init(utils, modal, map, mask,  false );
     });
 
     /*
@@ -141,7 +143,7 @@ LazyLoad.js(scripts, function () {
     * Employee add expense form - view 319 is for the add expense form
     * */
     utils.specifyView('view_389', function(){
-        utils.init(utils, modal, map,  true );
+        expense.init(utils, modal, map, mask,   true );
     });
 
     /*
@@ -159,7 +161,7 @@ LazyLoad.js(scripts, function () {
     * Employee edit expense view for first edit expense page
     * */
     utils.specifyView('view_392', function(){
-        expense.init(utils, modal, map, true);
+        expense.init(utils, modal, map, mask, true);
     });
 
     /*
@@ -168,7 +170,7 @@ LazyLoad.js(scripts, function () {
     * Employee edit expense view for second edit expense page
     * */
     utils.specifyView('view_395', function(){
-        expense.init(utils, modal, map, true);
+        expense.init(utils, modal, map, mask, true);
     });
 
     /*
@@ -177,7 +179,7 @@ LazyLoad.js(scripts, function () {
     * Employee edit expense view for the re submit page
     * */
     utils.specifyView('view_449', function(){
-        expense.init(utils, modal, map, true);
+        expense.init(utils, modal, map, mask, true);
     });
 
     /*
@@ -186,7 +188,7 @@ LazyLoad.js(scripts, function () {
     * Employee edit expense view for second edit expense page
     * */
     utils.specifyView('view_399', function(){
-        expense.init(utils, modal, map, true);
+        expense.init(utils, modal, map, mask, true);
     });
 
     /*
@@ -204,8 +206,8 @@ LazyLoad.js(scripts, function () {
     * Add Referral lead  view
     * */
     utils.specifyView('view_421',function(){
-        utils.initPhoneNumberConfigs('field_25');
-        utils.setPhoneNumberMask(['field_25']);
+        mask.initPhoneNumberConfigs('field_25');
+        mask.setPhoneNumberMask(['field_25']);
 
         // salesperson api request
         $(document).on('knack-form-submit.view_421', function(event, view, record) {
@@ -231,5 +233,4 @@ LazyLoad.js(scripts, function () {
     utils.specifyView("view_127",function(){
         utils.checkVersion();
     });
-
 });

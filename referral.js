@@ -1,4 +1,6 @@
 const referral = (function () {
+    let utils, modals, map, mask = {};
+
     function hideSalesPersonFieldIfExist() {
         let api_url = 'https://api.knack.com/v1/objects/object_25/records';
         let filters = [
@@ -27,8 +29,11 @@ const referral = (function () {
         });
     }
 
-    function init(utils, modals, map) {
-        console.log('map', map)
+    function init(_utils, _modal, _map, _mask) {
+        utils = _utils;
+        modals = _modal;
+        map = _map;
+        mask = _mask;
         hideSalesPersonFieldIfExist();
     }
 

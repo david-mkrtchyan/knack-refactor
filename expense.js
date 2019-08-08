@@ -7,7 +7,7 @@ const expense = (function () {
     }
 
     function getMileageRateByUser() {
-        return Knack.getUserAttributes() != undefined ? Knack.getUserAttributes().values.field_247 : .35 ;
+        return Knack.getUserAttributes() !== undefined ? Knack.getUserAttributes().values.field_247 : .35 ;
     }
 
 // calculates total cost of mileage and tolls ;
@@ -20,10 +20,10 @@ const expense = (function () {
         var dailyMileageDeduct = "#field_267";
         var maxExpense = 1000;
         var mileageDeduct = 40;
-        var tolls = getNum(tollsId);
+        var tolls = utils.getNum(tollsId);
         var mileageRate = user ?  getMileageRateByUser() :  getMileageRateUsingForm() ;
         var deduct = $(dailyMileageDeduct).val() == "No"? 0 : mileageRate * mileageDeduct ;
-        var totalMiles = getNum(endingMileageId) - getNum(beginningMileageId) ;
+        var totalMiles = utils.getNum(endingMileageId) - utils.getNum(beginningMileageId) ;
         var total = totalMiles > 40 ? +(totalMiles * mileageRate) - deduct + tolls : tolls;
 
         total = total < 0 ? 0 : total ;
@@ -37,7 +37,7 @@ const expense = (function () {
     }
 
     // for all add expense form views use this code, there is a temp band aid in there.
-    function setupAddExpenseForm(isCalculatedByLoggedInUser) {
+    function setupAddExpenseForm(isCalculatedByLoggedInUser, utils, modal, map, mask) {
         var categoryId = "#kn-input-field_238 .select";
         var categoryIdChzn = "#connection-picker-chosen-field_238 .chzn-container";
         var beginningMileageId = "#field_225" ;
@@ -82,7 +82,7 @@ const expense = (function () {
         $(".kn-form .kn-button").on('click',function() {
             var hasReceipt = $('#kn-input-field_227 .kn-asset-current').text().trim(" ").length != 0 ;
             var isTravelExpense = $(categoryIdChzn + " a span").text().toLowerCase() == "travel" ;
-            var tolls = getNum(tollsId);
+            var tolls = utils.getNum(tollsId);
 
             if ( isTravelExpense ){
                 calculateTravelExpense(isCalculatedByLoggedInUser)
@@ -100,8 +100,8 @@ const expense = (function () {
         });
     }
 
-    function init(utils, modal, map, isCalculatedByLoggedInUser) {
-        setupAddExpenseForm(isCalculatedByLoggedInUser)
+    function init(utils, modal, map, mask, isCalculatedByLoggedInUser) {
+        setupAddExpenseForm(isCalculatedByLoggedInUser, utils, modal, map, mask)
 
     }
 
