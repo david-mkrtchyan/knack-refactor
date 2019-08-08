@@ -36,7 +36,7 @@ const leads = (function () {
         return {
             init
         }
-    });
+    })();
 
     const quickSet = (function () {
         let phoneId = "#field_25" ;
