@@ -6,7 +6,11 @@ const leads = (function () {
         let cityId = "#field_75";
         let stateId = "#view_152-field_76";
         let availableCitiesId = "#view_152-field_194";
-        let utils = modal = inputMask = map = {};
+
+        let utils = {};
+        let modal = {};
+        let inputMask = {};
+        let map = {};
 
         $('#kn-input-field_507 label span').remove();
         $('#field_507').hide();
@@ -31,6 +35,8 @@ const leads = (function () {
             // this checks version on qs form
             utils.checkVersion();
             listenToInputFieldValueChange('#field_25', modal);
+
+            listenToSourceCodeValueChanges('field_588', modal);
         }
 
         return {
@@ -45,7 +51,12 @@ const leads = (function () {
         let cityId = "#field_75";
         let stateId = "#view_103-field_76";
         let availableCitiesId = "#view_103-field_194";
-        let utils, modal, map, inputMask = {};
+
+        let utils = {};
+        let modal = {};
+        let map = {};
+        let inputMask = {};
+
 
         $('#kn-input-field_507 label span').remove();
         $('#field_507').hide();
@@ -83,12 +94,56 @@ const leads = (function () {
             utils.disableInputDefaultAutoSuggest(['first', 'last']);
             // this makes sure the most recent version is used for lead form
             utils.checkVersion();
+
+            listenToSourceCodeValueChanges('field_588', modal);
         }
 
         return {
             init
         }
     })();
+
+    function listenToSourceCodeValueChanges(field, modal) {
+        let timer = 0;
+        let el = document.getElementById(field);
+        if (!el) {
+            return;
+        }
+        el.oninput = function (e) {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                // Request route
+                var api_url = 'https://api.knack.com/v1/objects/object_9/records';
+
+                // Prepare filters
+                var filters = {
+                    'rules': [
+                        {
+                            'field':'field_82',
+                            'operator':'is',
+                            'value':e.target.value
+                        },
+                    ]
+                };
+
+                // Add filters to rocute
+                api_url += '?filters=' + encodeURIComponent(JSON.stringify(filters));
+                $.ajax({
+                    url: `${api_url}`,
+                    type: "GET",
+                    headers: knackApiHeaders,
+                    success: function (res) {
+                        modal.infoModal([], 'Invalid Source Code', 'Source Code doesn\'t exist')
+                        console.log(res, 'the founded source code with provided code ')
+                    },
+                    error: function (request, error) {
+                        console.log('Error getting source code by code', error);
+                    }
+                });
+
+            }, 300);
+        }
+    }
 
     //Adding user credentials on Leads/Quicksets submit this method also in Utils
     function showCustomerInfoInConfirmationMessage(record, view) {
@@ -117,11 +172,15 @@ const leads = (function () {
 
     //listenting to element input value changes
     function listenToInputFieldValueChange(fieldName, modal) {
-        document.getElementById('field_25').onpaste = function() {
-            setTimeout(() => {
-                initModalForLeadSearch.call(this, modal);
-            }, 0)
-        };
+        let el = document.getElementById('field_25');
+        if (el) {
+            el.onpaste = function() {
+                setTimeout(() => {
+                    initModalForLeadSearch.call(this, modal);
+                }, 0)
+            };
+        }
+
         $(fieldName).on('keyup', function (e) {
             if (e.which >= 48 && e.which <= 57 || e.which >= 96 && e.which <= 105) {
                 initModalForLeadSearch.call(this, modal);

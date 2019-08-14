@@ -1,6 +1,10 @@
 const addLead = (function () {
     //global variables
-    let map, utils, modal, cookies, mask = {};
+    let map = {};
+    let mask = {};
+    let utils = {};
+    let modal = {};
+    let cookies = {};
 
     let firstNameId = "#first";
     let lastNameId = "#last";
@@ -99,6 +103,13 @@ const addLead = (function () {
         $(availableCitiesId).on("change", function () {
             $(cityId).val($(this).val());
         });
+    }
+
+    //changes input type to tell for mobile, in order to show Number pad
+    function initZipCodeConfigs(fields = []) {
+        fields.forEach(field => {
+            document.getElementById(field).setAttribute('type', 'tel')
+        })
     }
 
     //runs on blur of source code

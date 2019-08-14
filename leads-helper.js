@@ -19,7 +19,7 @@ const leadsHelper = (function () {
 
             if(	zip.replace(/ /g,'').length === 5 && $(cityFieldId).val().length < 3	){
                 map.getZipCodeAddressInfo( zip , function( res ){
-                    var data = getCityAndState( res, cityFieldId );
+                    var data = getCityAndState( res, cityFieldId, modal );
                     var cities = data[0] ;
                     $(stateFieldId).val( data[1] );
                     $(cityFieldId).val( cities[0] );
@@ -74,8 +74,8 @@ const leadsHelper = (function () {
         return [zip, cities, state];
     }
 
-    function getCityAndState(res, cityFieldId) {
-        var data = getAddressInfo(res, cityFieldId);
+    function getCityAndState(res, cityFieldId, modal) {
+        var data = getAddressInfo(res, cityFieldId, modal);
         var cities = data[1];
         var state = data[2];
         return [cities, state];

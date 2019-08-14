@@ -1,4 +1,4 @@
-var map = (function () {
+const map = (function () {
     // this message is shown if there is an error sending an api request to google
     var errorMessage = "Can't search city and state right now, enter it manually if known.";
 

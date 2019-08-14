@@ -7,14 +7,16 @@ window.knackApiHeaders = {
     "X-Knack-REST-API-KEY": "d8428e10-a7f4-11e9-808f-0727a4c9d6da"
 };
 
+console.log('knackApiHeaders', knackApiHeaders)
+
 const scripts = [
     'https://knack.test/modals.js',
     'https://knack.test/utils.js',
     'https://knack.test/map.js',
-    'http://knack.test/cookies.js',
-    'http://knack.test/mask.js',
+    'https://knack.test/cookies.js',
+    'https://knack.test/mask.js',
     'https://knack.test/referral.js',
-    'http://knack.test/leads-helper.js',
+    'https://knack.test/leads-helper.js',
     'https://knack.test/leads.js',
     'https://knack.test/add-lead.js',
     'https://knack.test/expense.js',
